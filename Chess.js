@@ -1,14 +1,4 @@
-﻿ /*процедуры для оптимизации кода
- 
-	здесь будут
-	
- */
- /*процедуры для укорачивания кода
- 
-	здесь будут
-	
- */
- function lr(mas,board,x,y){
+﻿ function lr(mas,board,x,y){
        var xx=x;
        while(xx>0){
             xx--;
@@ -271,7 +261,7 @@ class Game {
 		this.id=id;//id divа в котором всё происходит
 		this.pawnc=false;// для реализации события "эволюции" пешки
 		this.moves=new Array();//список ходов
-		this.k=-1;// отвечает за состояние игры(начало/шах/пат/мат/ничья)
+		this.k=-1;// отвечает за состояние игрового цикла
 		this.turn=0;// отвечает за то, чей сейчас ход(белых или черных)
 		this.x=-1;// координаты нажатой клетки
 		this.y=-1;
@@ -573,28 +563,24 @@ class Game {
 			this.cdraw();
             if((this.pat==true)||(this.mat==true)||(this.draw==true))this.k=2;
 			if(this.pawnc!=true) firebase.database().ref(datapath).set(this);
-			this.gamestate(this);
 			drawdead();
         }
 		else this.k=-1;
     }
 	gamestate(){//реакция на шах, пат, ничью, мат.
-		var s="belim";
-		if(this.turn!=0)s="chernim";
+		var s="to white";
+		if(this.turn!=0)s="to black";
 			if((this.shah==true)&&(this.k!=2)){
-				console.log("Shah "+s);
+				alert("Check "+s);
 			}
 		if(this.k==2){    
-			if(this.draw==true){
-				console.log("Draw");
-			}
-			else if(this.mat==true){
-				console.log("Mat "+s);
+			if(this.mat==true){
+				alert("Mate "+s);
 			}
 			else{
-				console.log("Pat");
+				alert("Pat");
 			}
-			console.log("Do svidania");
+			alert("Goodbye");
 		}
 	}
 	pawnchange(nx,ny,go){//реализация обмена пешки на выбранную фигуру
@@ -630,10 +616,6 @@ class Game {
         this.cshah();
         this.cmat();
 		this.cdraw();
-        if((this.pat==true)||(this.mat==true)||(this.shah==true)){
-			this.gamestate();
-			if((this.pat==true)||(this.mat==true))this.k=2;
-		}
 	}
 	beforemove(nx,ny){//проверяет нажал ли пользователь на свою фигуру
 		for(var i=0;i<this.players[this.turn].f.length;i++){
@@ -670,7 +652,6 @@ class Game {
 		redraw(this);
 	}
 }
-
 var bufx;
 var bufy;
 function evlis1(){//срабатывает при нажатии на поле, вычисляет координаты нажатой клетки
@@ -734,6 +715,18 @@ function darkcellevlis(){//срабатывает при выборе новог
 		}
 		var input2=document.getElementById(3+"_"+k);
 		input2.style.borderColor="black";
+		var udobno=document.getElementById("otherguir");
+		udobno.style.backgroundColor=darkcellcolor;
+		var udobno=document.getElementById("otherguil");
+		udobno.style.backgroundColor=darkcellcolor;
+		for(var i=0;i<figsetnum;i++){
+			var udobno=document.getElementById(1+"_"+i);
+			udobno.style.backgroundColor=darkcellcolor;
+		}
+		for(var i=0;i<circlesetnum;i++){
+			var udobno=document.getElementById(2+"_"+i);
+			udobno.style.backgroundColor=darkcellcolor;
+		}
 		if(game!=0){
 			redraw(game);
 			if(game.k==1) drawlight(game);
@@ -761,12 +754,6 @@ function brightcellevlis(){//срабатывает при выборе ново
 			if(game.k==1) drawlight(game);
 		}
 }
-/*function evlis3(){//будем срабатывать при согласовании хода назад
-		game.back();
-}*/
-//
-//GUI
-//
 function setimg(im,udobno){// добавляет в требуемую клетку требуемое изображение
 	im.className="imgonboard";
 	udobno.appendChild(im);
@@ -977,12 +964,14 @@ function createbuttons(id){//cоздание всего кроме доски и
 	var s=100*(window.innerWidth-0.625*window.innerHeight)/(2*window.innerWidth);
 	var input1=document.createElement("div");
 	input1.className="othergui";
+	input1.id="otherguil";
 	input1.style.width=s+"%";
 	input1.style.float="left";
 	form1.appendChild(input1);
 	creategsetting(input1,"settings");
 	var input1=document.createElement("div");
 	input1.className="othergui";
+	input1.id="otherguir";
 	input1.style.width=s+"%";
 	input1.style.float="right";
 	form1.appendChild(input1);
@@ -999,19 +988,6 @@ var figset=picpath+"figures/";
 var cirtype=picpath+"circles/";
 var figureset=figset+picsnumber;
 var circletype=cirtype+picsnumber;
-/*function setgraphics(){
-	var picsnumber=0;
-	var figsetnum=7;
-	var circlesetnum=8;
-	var celcolnum=4;
-	var darkcellcolor="red";
-	var brightcellcolor="white";
-	var picpath="img/";
-	var figset=picpath+"figures/";
-	var cirtype=picpath+"circles/";
-	var figureset=figset+picsnumber;
-	var circletype=cirtype+picsnumber;
-}*/
 function creategsetting(par,meu){//создание интерфейса для настроек графики
 	var input1=document.createElement("div");
 	input1.id=meu;
@@ -1127,14 +1103,6 @@ var intwindowwidth=window.innerWidth;
 var intwindowheight=window.innerHeight;
 var windowwidth=intwindowwidth+"px";
 var windowheight=intwindowheight+"px";
-/*function setsizes(){
-	intsize=0.625*window.innerHeight;
-	size=intsize+"px";
-	intwindowwidth=window.innerWidth;
-	intwindowheight=window.innerHeight;
-	windowwidth=intwindowwidth+"px";
-	windowheight=intwindowheight+"px";
-}*/
 var gameid=0;
 var dpath="games/";
 var datapath=dpath+gameid;
@@ -1152,11 +1120,9 @@ function create(id){//создание игры
 }
 create(0);
 var refi=firebase.database().ref(dpath);
-
 refi.on('child_changed',function(data) {//отправка актуальной версии партии игрокам после хода
 		g=data.val();
 		var shor=g.players[0].dead;
-		//console.log(g);
 		game.players[0].dead.length=shor.length;
 		var optimizator=game.players[0].dead.length;
 		for(var i=0;i<optimizator;i++){
@@ -1204,6 +1170,7 @@ refi.on('child_changed',function(data) {//отправка актуальной 
 		game.setboard();
 		redraw(game);
 		drawdead();
+		game.gamestate();
 		if(game.moves!=undefined) addnewmove();
 		else {
 			game.moves=new Array();
@@ -1212,30 +1179,3 @@ refi.on('child_changed',function(data) {//отправка актуальной 
 			
 		}
 });
-
-
-
-/*TO DO:
-
-регистрация
-
-запретить ходить чужими фигурами
-
-чат
-вернуться по ходу назад
-просьба переходить
-сохранение незаконченных партий
-вариации блицов
-
-перерисовка при изменениии размеров экрана
-версия для вертикальных экранов(телефонов)
-
-оптимизировать:
-	отображаение мёртвых фигур
-
-укоротить:?
-
-1. процедура для поиска номера фигуры в фигурсете по имени и/или координатам
-2. процедура создающая двумерные массивы 8 на 8 с заданным названием и заполняющая их false
-
-*/
